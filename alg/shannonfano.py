@@ -1,4 +1,4 @@
-#AUTHOR
+#THANKS TO
 #https://github.com/NitroLine/Shannon-Fano-archiver
 
 from .utils import *

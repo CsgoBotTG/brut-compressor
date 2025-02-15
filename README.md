@@ -1,7 +1,7 @@
 <h1>Brut-Packer</h1>
 
 ```
-usage: main.py [-h] [-c] [-d] [-o OUTPUT] [-a ALG] inputfile
+usage: main.py [-h] [-c] [-d] [-o OUTPUT] [-a ALG] [-b BRUT] inputfile
 
 Compressor with many alghorithms
 
@@ -14,8 +14,11 @@ optional arguments:
   -d, --decompress      Compress or Decompress inputfile
   -o OUTPUT, --output OUTPUT
                         path to output file. If not used, using [inputfile].packed
-  -a ALG, --alg ALG     Compression algorithm. Variants: {HF(Huffman);RLE(Run-Length Encoding);SHF(Shannon-Fan)}
+  -a ALG, --alg ALG     Compression algorithm. Variants: {HF(Huffman);RLE(Run-Length Encoding);SHF(Shannon-Fan);LZW(Lempel-Ziv-Welch)}
+  -b BRUT, --brut BRUT  Bruforce. Can be used only in compression mode. Brut force alghorithms for best compression result. Ve-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-ery slow.     
+                        Usage: ```python main.py -c file.txt -o out.bin --brut=[HF;RLE]```. [*] - all methods
 ```
 
 # Thanks to
 - [Shannon Fano](https://github.com/NitroLine/Shannon-Fano-archiver)
+- [LZW](https://github.com/adityagupta3006/LZW-Compressor-in-Python)
