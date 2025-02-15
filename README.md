@@ -14,5 +14,8 @@ optional arguments:
   -d, --decompress      Compress or Decompress inputfile
   -o OUTPUT, --output OUTPUT
                         path to output file. If not used, using [inputfile].packed
-  --alg ALG             Compression algorithm. Variants: {HF(Huffman);RLE(Run-Length Encoding)}
+  --alg ALG             Compression algorithm. Variants: {HF(Huffman);RLE(Run-Length Encoding);SHF(Shannon-Fan)}
 ```
+
+# Thanks to
+- [Shannon Fano](https://github.com/NitroLine/Shannon-Fano-archiver)

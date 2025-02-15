@@ -1,6 +1,6 @@
 import os
 
-def rle_encode(data):
+def rle_encode(data: bytes):
     encoded_data = bytearray()
     i = 0
     while i < len(data):
@@ -16,7 +16,7 @@ def rle_encode(data):
         i += count
     return bytes(encoded_data)
 
-def rle_decode(data):
+def rle_decode(data: bytes):
     decoded_data = bytearray()
     i = 0
     while i < len(data):

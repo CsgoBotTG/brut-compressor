@@ -1,10 +1,12 @@
 from alg.utils import *
 
+import alg.shannonfano as SHF
 import alg.huffman as HF
 import alg.rle as RLE
 
 import argparse
 
+import time
 import os
 
 def main():
@@ -13,13 +15,12 @@ def main():
     parser.add_argument('-c', '--compress', help='Compress or Decompress inputfile', action='store_true')
     parser.add_argument('-d', '--decompress', help='Compress or Decompress inputfile', action='store_true')
     parser.add_argument('-o', '--output', type=str, help='path to output file. If not used, using [inputfile].packed')
-    parser.add_argument('--alg', type=str, help='Compression algorithm. Variants: {HF(Huffman);RLE(Run-Length Encoding)}', default='HF')
+    parser.add_argument('--alg', type=str, help='Compression algorithm. Variants: {HF(Huffman);RLE(Run-Length Encoding);SHF(Shannon-Fan)}', default='HF')
 
     args = parser.parse_args()
 
     if bool(args.compress) == bool(args.decompress):
-        ERR('duh. choose compress or decompress')
-        exit()
+        ERREXIT('duh. choose compress or decompress')
 
     output_file = args.inputfile + ('.packed' if args.compress else '.unpacked')
     if args.output:
@@ -28,20 +29,23 @@ def main():
     else:
         INFO("No --output or -o in args. OutputFile: " + output_file)
 
+    ### COMPRESS
     if args.compress:
         INFO("ALG: " + args.alg)
+
+        start = time.time()
         if args.alg == 'HF':
-            compressed = HF.compress(args.inputfile)
+            HF.compress(args.inputfile, output_file)
         elif args.alg == 'RLE':
-            compressed = RLE.compress(args.inputfile)
+            RLE.compress(args.inputfile, output_file)
+        elif args.alg == 'SHF':
+            SHF.compress(args.inputfile, output_file)
         else:
-            ERR("duh. idk about this alg")
-            exit()
+            ERREXIT("duh. idk about this alg")
 
-        INFO('COMPRESSED!')
+        end = time.time()
 
-        with open(output_file, 'wb') as compressed_out:
-            compressed_out.write(compressed)
+        INFO(f'Compressed in {(end-end):.03f}sec')
 
         _obytes = os.path.getsize(args.inputfile)
         _cbytes = os.path.getsize(output_file)
@@ -49,20 +53,23 @@ def main():
         OK(f'Compressed file: {output_file} | {_cbytes} bytes')
         OK(f'Compressed file to about {round((((_obytes-_cbytes)/_obytes)*100), 0)}% of original')
 
+    ### DECOMPRESS
     elif args.decompress:
         INFO("ALG: " + args.alg)
+
+        start = time.time()
         if args.alg == 'HF':
-            decompressed = HF.decompress(args.inputfile)
+            HF.decompress(args.inputfile, output_file)
         elif args.alg == 'RLE':
-            decompressed = RLE.decompress(args.inputfile)
+            RLE.decompress(args.inputfile, output_file)
+        elif args.alg == 'SHF':
+            SHF.decompress(args.inputfile, output_file)
         else:
-            ERR("duh. idk about this alg")
-            exit()
+            ERREXIT("duh. idk about this alg")
 
-        INFO('DECOMPRESSED!')
+        end = time.time()
 
-        with open(output_file, 'wb') as decompressed_out:
-            decompressed_out.write(decompressed)
+        INFO(f'Decompressed in {(end-start):.03f}')
 
         _obytes = os.path.getsize(args.inputfile)
         _cbytes = os.path.getsize(output_file)

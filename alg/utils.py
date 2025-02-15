@@ -9,6 +9,7 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-OK   = lambda string: print(f'{bcolors.OKGREEN}[!SUCCS!]{bcolors.ENDC} {string}')
-INFO = lambda string: print(f'{bcolors.WARNING}[!INFO!]{bcolors.ENDC} {string}')
-ERR  = lambda string: print(f'{bcolors.FAIL}[!ERR!]{bcolors.ENDC} {string}')
+OK      = lambda string:      print(f'{bcolors.OKGREEN}[!SUCCS!]{bcolors.ENDC} {string}')
+INFO    = lambda string:      print(f'{bcolors.WARNING}[!INFO!]{bcolors.ENDC} {string}')
+ERR     = lambda string:      print(f'{bcolors.FAIL}[!ERR!]{bcolors.ENDC} {string}')
+ERREXIT = lambda string: exit(print(f'{bcolors.FAIL}[!ERR!]{bcolors.ENDC} {string}'))
