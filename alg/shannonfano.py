@@ -1,7 +1,7 @@
 #AUTHOR
 #https://github.com/NitroLine/Shannon-Fano-archiver
 
-from utils import *
+from .utils import *
 
 from collections import Counter
 from math import log, ceil

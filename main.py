@@ -15,7 +15,7 @@ def main():
     parser.add_argument('-c', '--compress', help='Compress or Decompress inputfile', action='store_true')
     parser.add_argument('-d', '--decompress', help='Compress or Decompress inputfile', action='store_true')
     parser.add_argument('-o', '--output', type=str, help='path to output file. If not used, using [inputfile].packed')
-    parser.add_argument('--alg', type=str, help='Compression algorithm. Variants: {HF(Huffman);RLE(Run-Length Encoding);SHF(Shannon-Fan)}', default='HF')
+    parser.add_argument('-a', '--alg', type=str, help='Compression algorithm. Variants: {HF(Huffman);RLE(Run-Length Encoding);SHF(Shannon-Fan)}', default='HF')
 
     args = parser.parse_args()
 
