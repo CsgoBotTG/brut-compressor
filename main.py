@@ -2,6 +2,7 @@ from alg.utils import *
 
 import alg.shannonfano as SHF
 import alg.huffman as HF
+import alg.lzw as LZW
 import alg.rle as RLE
 
 import argparse
@@ -15,7 +16,7 @@ def main():
     parser.add_argument('-c', '--compress', help='Compress or Decompress inputfile', action='store_true')
     parser.add_argument('-d', '--decompress', help='Compress or Decompress inputfile', action='store_true')
     parser.add_argument('-o', '--output', type=str, help='path to output file. If not used, using [inputfile].packed')
-    parser.add_argument('-a', '--alg', type=str, help='Compression algorithm. Variants: {HF(Huffman);RLE(Run-Length Encoding);SHF(Shannon-Fan)}', default='HF')
+    parser.add_argument('-a', '--alg', type=str, help='Compression algorithm. Variants: {HF(Huffman);RLE(Run-Length Encoding);SHF(Shannon-Fan);LZW(Lempel-Ziv-Welch)}', default='HF')
 
     args = parser.parse_args()
 
@@ -40,6 +41,8 @@ def main():
             RLE.compress(args.inputfile, output_file)
         elif args.alg == 'SHF':
             SHF.compress(args.inputfile, output_file)
+        elif args.alg == 'LZW':
+            LZW.compress(args.inputfile, output_file)
         else:
             ERREXIT("duh. idk about this alg")
 
@@ -64,6 +67,8 @@ def main():
             RLE.decompress(args.inputfile, output_file)
         elif args.alg == 'SHF':
             SHF.decompress(args.inputfile, output_file)
+        elif args.alg == 'LZW':
+            LZW.decompress(args.inputfile, output_file)
         else:
             ERREXIT("duh. idk about this alg")
 
