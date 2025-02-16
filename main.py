@@ -2,6 +2,7 @@ from alg.utils import *
 
 import alg.shannonfano as SHF
 import alg.huffman as HF
+import alg.lz78 as LZ78
 import alg.lzw as LZW
 import alg.rle as RLE
 
@@ -12,8 +13,6 @@ import os
 
 
 def brutforce(inputfile: str, outputfile: str, algs: dict):
-    size = os.path.getsize(inputfile)
-
     result = {}
     for name_alg, lib_alg in algs.items():
         INFO('Starting ' + name_alg)
@@ -24,11 +23,12 @@ def brutforce(inputfile: str, outputfile: str, algs: dict):
 
         result[name_alg] = bytes_to_write
 
-        INFO(f'Compressed in {(end-start):.03f}sec')
-        OK(f'Compressed {name_alg} file result: {len(bytes_to_write)} | {round((((size-len(bytes_to_write))/len(bytes_to_write))*100), 0)}%')
+        INFO(f'Compressed with {name_alg} ALG in {(end-start):.03f}sec')
+        OK(f'Compressed {name_alg} file result: {len(bytes_to_write)} bytes')
 
-    best = max(result.keys(), key=result.get)
-    OK(f'Best compression with {best} alg\n')
+    best = min(result.keys(), key=lambda name_alg: len(result.get(name_alg)))
+    print()
+    OK(f'Best compression result with {best} alg\n')
     #OK(f'{best} alg result: {len(result[best])} | {round((((size-len(result[best]))/len(result[best]))*100), 0)}%')
 
     with open(outputfile, 'wb') as file:
@@ -41,7 +41,7 @@ def main():
     parser.add_argument('-c', '--compress', help='Compress or Decompress inputfile', action='store_true')
     parser.add_argument('-d', '--decompress', help='Compress or Decompress inputfile', action='store_true')
     parser.add_argument('-o', '--output', type=str, help='path to output file. If not used, using [inputfile].packed')
-    parser.add_argument('-a', '--alg', type=str, help='Compression algorithm. Variants: {HF(Huffman);RLE(Run-Length Encoding);SHF(Shannon-Fan);LZW(Lempel-Ziv-Welch)}')
+    parser.add_argument('-a', '--alg', type=str, help='Compression algorithm. Variants: {HF(Huffman);RLE(Run-Length Encoding);SHF(Shannon-Fan);LZW(Lempel-Ziv-Welch);LZ78(Lempel-Ziv 78)}')
     parser.add_argument('-b', '--brut', type=str, help='Bruforce. Can be used only in compression mode. Brut force alghorithms for best compression result. Ve-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-ery slow. Usage: ```python main.py -c file.txt -o out.bin --brut=[HF;RLE]```. [*] - all methods')
 
     args = parser.parse_args()
@@ -69,11 +69,13 @@ def main():
 
             algs = {}
             for alg_use in args.brut[1:-1].split(';'):
+                alg_use = alg_use.upper()
                 if alg_use == '*':
                     algs['HF'] = HF
                     algs['RLE'] = RLE
                     algs['SHF'] = SHF
                     algs['LZW'] = LZW
+                    algs['LZ78'] = LZ78
                     break
 
                 if alg_use == 'HF':
@@ -84,6 +86,8 @@ def main():
                     algs['SHF'] = SHF
                 elif alg_use == 'LZW':
                     algs['LZW'] = LZW
+                elif alg_use == 'LZ78':
+                    algs['LZ78'] = LZ78
                 else:
                     ERREXIT(f"duh. idk about '{alg_use}' alg")
 
@@ -100,6 +104,8 @@ def main():
                 SHF.compress(args.inputfile, output_file)
             elif args.alg == 'LZW':
                 LZW.compress(args.inputfile, output_file)
+            elif args.alg == 'LZ78':
+                LZ78.compress(args.inputfile, output_file)
             else:
                 ERREXIT(f"duh. idk about '{args.alg}' alg")
 
@@ -126,6 +132,8 @@ def main():
             SHF.decompress(args.inputfile, output_file)
         elif args.alg == 'LZW':
             LZW.decompress(args.inputfile, output_file)
+        elif args.alg == 'LZ78':
+            LZ78.decompress(args.inputfile, output_file)
         else:
             ERREXIT("duh. idk about this alg")
 
@@ -137,6 +145,7 @@ def main():
         _cbytes = os.path.getsize(output_file)
         OK(f'Original file: {args.inputfile}')
         OK(f'Decompressed file: {output_file}')
+
 
 if __name__ == '__main__':
     main()
