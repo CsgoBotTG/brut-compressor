@@ -1,7 +1,7 @@
 <h1>Brut-Packer</h1>
 
 ```
-usage: main.py [-h] [-c] [-d] [-o OUTPUT] [-a ALG] [-b BRUT] inputfile
+usage: main.py [-h] [-c] [-d] [-o OUTPUT] [-a ALG] [-b BRUT] [-noMT] inputfile
 
 Compressor with many alghorithms
 
@@ -17,6 +17,8 @@ optional arguments:
   -a ALG, --alg ALG     Compression algorithm. Variants: {HF(Huffman);RLE(Run-Length Encoding);SHF(Shannon-Fan);LZW(Lempel-Ziv-Welch);LZ78(Lempel-Ziv 78)}
   -b BRUT, --brut BRUT  Bruforce. Can be used only in compression mode. Brut force alghorithms for best compression result. Ve-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-ery slow.     
                         Usage: ```python main.py -c file.txt -o out.bin --brut=[HF;RLE]```. [*] - all methods
+  -noMT, --nomultithreading
+                        use only with --brut. if set brut force doesn't use multithreading
 ```
 
 # Thanks to
