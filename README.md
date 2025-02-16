@@ -30,6 +30,7 @@ optional arguments:
 | big.txt | None | 57% | - | None | 100% | None |
 | elden.jpeg | 102% | 100% | - | None | 102% | 107% |
 | knight.jpg | 104% | 102% | 134% | 188% | 102% | 112% |
+| skbidi.png | 106% | 102% | - | 185% | 102% | 116% |
 
 # Thanks to
 - [Shannon Fano](https://github.com/NitroLine/Shannon-Fano-archiver)
