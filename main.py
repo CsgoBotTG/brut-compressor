@@ -173,7 +173,7 @@ def main():
 
         end = time.time()
 
-        INFO(f'Decompressed in {(end-start):.03f}')
+        INFO(f'Decompressed in {(end-start):.03f}sec')
 
         _obytes = os.path.getsize(args.inputfile)
         _cbytes = os.path.getsize(output_file)
