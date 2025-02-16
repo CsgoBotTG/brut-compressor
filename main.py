@@ -159,7 +159,7 @@ def main():
 
             end = time.time()
 
-            INFO(f'Compressed in {(end-end):.03f}sec')
+            INFO(f'Compressed in {(end-start):.03f}sec')
 
         _cbytes = os.path.getsize(output_file)
         OK(f'Original file: {args.inputfile} | {_obytes} bytes')
