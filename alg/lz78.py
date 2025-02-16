@@ -1,3 +1,4 @@
+from .utils import *
 import struct
 
 def compress(input_file, output_file=None):
@@ -60,7 +61,7 @@ def decompress(input_file, output_file=None):
         index += 1
 
         if phrase_index not in dictionary:
-            raise ValueError("Invalid compressed data: phrase index not in dictionary.")
+            ERREXIT("Invalid compressed data: phrase index not in dictionary.")
 
         phrase = dictionary[phrase_index]
         new_phrase = phrase + symbol
@@ -76,6 +77,8 @@ def decompress(input_file, output_file=None):
         return None
     else:
         return decompressed_data
+
+
 if __name__ == "__main__":
     import os
     from utils import *
