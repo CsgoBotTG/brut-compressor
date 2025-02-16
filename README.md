@@ -27,7 +27,7 @@ optional arguments:
 | --- | --- | --- | --- | --- | --- | --- |
 | alice_in_wonderland.txt | 39% | 58% | 57% | 63% | 99% | 65% |
 | small.txt | 37% | 56% | - | 63% | 100% | 63% |
-| big.txt | None | 57% | - | None | 100% | None |
+| big.txt | 36% | 57% | - | None | 100% | None |
 | elden.jpeg | 102% | 100% | - | None | 102% | 107% |
 | knight.jpg | 104% | 102% | 134% | 188% | 102% | 112% |
 | skbidi.png | 106% | 102% | - | 185% | 102% | 116% |
