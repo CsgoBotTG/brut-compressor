@@ -50,10 +50,7 @@ def build_huffman_codes(node, current_code="", huffman_codes=None):
 
     return huffman_codes
 
-def compress(input_file, output_file=None):
-    with open(input_file, 'rb') as file:
-        data = file.read()
-
+def huffman_encode(data: bytes):
     frequency = calculate_frequency(data)
     huffman_tree = build_huffman_tree(frequency)
     huffman_codes = build_huffman_codes(huffman_tree)
@@ -71,21 +68,13 @@ def compress(input_file, output_file=None):
         byte = encoded_data[i:i+8]
         byte_array.append(int(byte, 2))
 
-    if output_file is not None:
-        with open(output_file, 'wb') as file:
-            pickle.dump(frequency, file)
-            file.write(bytes(byte_array))
-    else:
-        compressed_data = bytearray()
-        compressed_data.extend(pickle.dumps(frequency))
-        compressed_data.extend(bytes(byte_array))
-        return bytes(compressed_data)
+    compressed_data = bytearray()
+    compressed_data.extend(pickle.dumps(frequency))
+    compressed_data.extend(bytes(byte_array))
 
-def decompress(input_file, output_file=None):
-    with open(input_file, 'rb') as file:
-        frequency = pickle.load(file)
-        byte_array = bytearray(file.read())
+    return bytes(compressed_data)
 
+def huffman_decode(frequency, byte_array: bytearray):
     binary_string = ""
     for byte in byte_array:
         binary_string += format(byte, '08b')
@@ -107,18 +96,39 @@ def decompress(input_file, output_file=None):
             decoded_data.append(character)
             current_code = ""
 
+    return bytes(decoded_data)
+
+def compress(input_file, output_file=None):
+    with open(input_file, 'rb') as file:
+        data = file.read()
+
+    compressed_data = huffman_encode(data)
+
+    if output_file is not None:
+        with open(output_file, 'wb') as file:
+            file.write(compressed_data)
+    else:
+        return compressed_data
+
+def decompress(input_file, output_file=None):
+    with open(input_file, 'rb') as file:
+        frequency = pickle.load(file)
+        byte_array = bytearray(file.read())
+
+    decoded_data = huffman_decode(frequency, byte_array)
+
     if not output_file is None:
         with open(output_file, 'wb') as file:
-            file.write(bytes(decoded_data))
+            file.write(decoded_data)
     else:
-        return bytes(decoded_data)
+        return decoded_data
 
 if __name__ == "__main__":
     from utils import *
 
-    input_filename = "test\\alice_in_wonderland.html"
-    compressed_filename = "test\\compressed_huf.html.huff"
-    decompressed_filename = "test\\decompressed_huf.html"
+    input_filename = "test\\alice_in_wonderland.txt"
+    compressed_filename = "test\\compressed_huf.txt.huff"
+    decompressed_filename = "test\\decompressed_huf.txt"
 
     #compressed = bytearray()
     #compressed.extend(b'HUFF')
