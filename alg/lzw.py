@@ -5,15 +5,15 @@
 # THANKS TO
 # https://github.com/adityagupta3006/LZW-Compressor-in-Python
 
-from struct import *
+from struct import pack, unpack
 
 def compress(input_file, output_file=None, n=12):
-    maximum_table_size = pow(2, int(n))
+    maximum_table_size = 1 << n
     with open(input_file, 'rb') as file:
         data = file.read()
 
-    dictionary_size = 256
-    dictionary = {bytes([i]): i for i in range(dictionary_size)}
+    dictionary = {bytes([i]): i for i in range(256)}
+    next_code = 256
     string = b""
     compressed_data = []
 
@@ -24,60 +24,61 @@ def compress(input_file, output_file=None, n=12):
             string = string_plus_symbol
         else:
             compressed_data.append(dictionary[string])
-            if len(dictionary) <= maximum_table_size:
-                dictionary[string_plus_symbol] = dictionary_size
-                dictionary_size += 1
+            if next_code < maximum_table_size:
+                dictionary[string_plus_symbol] = next_code
+                next_code += 1
             string = byte_symbol
 
-    if string in dictionary:
+    if string:
         compressed_data.append(dictionary[string])
 
-    packed_data = b""
+    packed_data = bytearray()
     for data_point in compressed_data:
-        packed_data += pack('>H', int(data_point))
+        packed_data.extend(pack('>H', data_point))
 
     if output_file:
         with open(output_file, 'wb') as output:
             output.write(packed_data)
         return None
     else:
-        return packed_data
+        return bytes(packed_data)
 
 
 def decompress(input_file, output_file=None, n=12):
-    maximum_table_size = pow(2, int(n))
+    maximum_table_size = 1 << n
     with open(input_file, "rb") as file:
         compressed_data = []
         while True:
             rec = file.read(2)
             if len(rec) != 2:
-                                break
-            (data, ) = unpack('>H', rec)
+                break
+            (data,) = unpack('>H', rec)
             compressed_data.append(data)
 
+    dictionary = {i: bytes([i]) for i in range(256)}
     next_code = 256
-    decompressed_data = b""
+    decompressed_data = bytearray()
     string = b""
 
-    dictionary_size = 256
-    dictionary = dict([(x, bytes([x])) for x in range(dictionary_size)])
-
     for code in compressed_data:
-        if not (code in dictionary):
-            dictionary[code] = string + (string[:1])
-        decompressed_data += dictionary[code]
-        if not (len(string) == 0):
+        if code not in dictionary:
+            dictionary[code] = string + string[:1]
+        entry = dictionary[code]
+        decompressed_data.extend(entry)
+
+        if string:
             if next_code < maximum_table_size:
-                dictionary[next_code] = string + (dictionary[code][:1])
+                dictionary[next_code] = string + entry[:1]
                 next_code += 1
-        string = dictionary[code]
+        string = entry
 
     if output_file:
         with open(output_file, "wb") as output_file:
             output_file.write(decompressed_data)
         return None
     else:
-        return decompressed_data
+        return bytes(decompressed_data)
+
 
 
 if __name__ == "__main__":
@@ -104,4 +105,4 @@ if __name__ == "__main__":
     _cbytes = os.path.getsize(compressed_filename)
     OK(f'Original file: {_obytes} bytes')
     OK(f'Compressed file: {_cbytes} bytes')
-    OK(f'Compressed file to about {round((((_obytes-_cbytes)/_obytes)*100), 0)}% of original')
+    OK(f'Compressed file to about {round((((_cbytes)/_obytes)*100), 0)}% of original')

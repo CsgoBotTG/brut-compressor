@@ -1,5 +1,5 @@
-import pickle
 import heapq
+import pickle
 import os
 
 class Node:
@@ -55,17 +55,22 @@ def huffman_encode(data: bytes):
     huffman_tree = build_huffman_tree(frequency)
     huffman_codes = build_huffman_codes(huffman_tree)
 
-    encoded_data = "".join(huffman_codes[byte] for byte in data)
+    encoded_bits = []  # Use a list to accumulate bits
 
-    padding_length = 8 - len(encoded_data) % 8
-    encoded_data += '0' * padding_length
+    for byte in data:
+        encoded_bits.append(huffman_codes[byte])
+
+    encoded_string = "".join(encoded_bits)
+
+    padding_length = 8 - len(encoded_string) % 8
+    encoded_string += '0' * padding_length
 
     padded_info = format(padding_length, '08b')
-    encoded_data = padded_info + encoded_data
+    encoded_string = padded_info + encoded_string
 
     byte_array = bytearray()
-    for i in range(0, len(encoded_data), 8):
-        byte = encoded_data[i:i+8]
+    for i in range(0, len(encoded_string), 8):
+        byte = encoded_string[i:i+8]
         byte_array.append(int(byte, 2))
 
     compressed_data = bytearray()
@@ -75,6 +80,10 @@ def huffman_encode(data: bytes):
     return bytes(compressed_data)
 
 def huffman_decode(frequency, byte_array: bytearray):
+    #build huffman codes from frequency
+    huffman_tree = build_huffman_tree(frequency)
+    reverse_mapping = {code: char for char, code in build_huffman_codes(huffman_tree).items()}
+
     binary_string = ""
     for byte in byte_array:
         binary_string += format(byte, '08b')
@@ -82,10 +91,6 @@ def huffman_decode(frequency, byte_array: bytearray):
     padding_length = int(binary_string[:8], 2)
     binary_string = binary_string[8:]
     binary_string = binary_string[:-padding_length]
-
-    huffman_tree = build_huffman_tree(frequency)
-
-    reverse_mapping = {code: char for char, code in build_huffman_codes(huffman_tree).items()}
 
     decoded_data = bytearray()
     current_code = ""
