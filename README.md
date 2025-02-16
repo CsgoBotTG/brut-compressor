@@ -22,6 +22,15 @@ optional arguments:
                         use only with --brut. if set brut force doesn't use multithreading
 ```
 
+# Tests
+| TEST/ALG (% of original) | BZIP | HF | LZ78 | LZW | RLE | SHF |
+| --- | --- | --- | --- | --- | --- | --- |
+| alice_in_wonderland.txt | 39% | 58% | 57% | 63% | 99% | 65% |
+| small.txt | 37% | 56% | - | 63% | 100% | 63% |
+| big.txt | None | 57% | - | None | 100% | None |
+| elden.jpeg | 102% | 100% | - | None | 102% | 107% |
+| knight.jpg | 104% | 102% | 134% | 188% | 102% | 112% |
+
 # Thanks to
 - [Shannon Fano](https://github.com/NitroLine/Shannon-Fano-archiver)
 - [LZW](https://github.com/adityagupta3006/LZW-Compressor-in-Python)

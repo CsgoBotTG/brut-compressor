@@ -16,7 +16,6 @@ import threading
 
 def compress_and_store(inputfile: str, result: dict, name_alg: str, lib_alg):
     INFO('Starting ' + name_alg)
-
     start = time.time()
     try:
         bytes_to_write = lib_alg.compress(inputfile)
@@ -29,13 +28,15 @@ def compress_and_store(inputfile: str, result: dict, name_alg: str, lib_alg):
 
     result[name_alg] = bytes_to_write
 
+    _obytes = os.path.getsize(inputfile)
+    _cbytes = len(bytes_to_write)
+
     INFO(f'Compressed with {name_alg} ALG in {(end-start):.03f}sec')
-    OK(f'Compressed {name_alg} file result: {len(bytes_to_write)} bytes')
+    OK(f'Compressed {name_alg} file result: {len(bytes_to_write)} bytes | {round(((_cbytes/_obytes)*100), 0)}% of original')
 
 
 def brutforce(inputfile: str, outputfile: str, algs: dict, multithread: bool = True):
     result = {}
-    print(inputfile)
 
     if multithread:
         threads = []
@@ -97,6 +98,7 @@ def main():
 
     ### COMPRESS
     if args.compress:
+        _obytes = os.path.getsize(args.inputfile)
         if args.brut:
             INFO("WARNING! Using brut force for best compression result.")
             if args.nomultithreading:
@@ -110,7 +112,10 @@ def main():
                     algs['RLE'] = RLE
                     algs['SHF'] = SHF
                     algs['LZW'] = LZW
-                    algs['LZ78'] = LZ78
+                    if _obytes > 6500:
+                        INFO("WARNING! LZ78 CANT ENCRYPT FILES MORE THAN 65536")
+                    else:
+                        algs['LZ78'] = LZ78
                     algs['BZIP'] = BZIP
                     break
 
@@ -123,7 +128,10 @@ def main():
                 elif alg_use == 'LZW':
                     algs['LZW'] = LZW
                 elif alg_use == 'LZ78':
-                    algs['LZ78'] = LZ78
+                    if _obytes > 6500:
+                        INFO("WARNING! LZ78 CANT ENCRYPT FILES MORE THAN 65536")
+                    else:
+                        algs['LZ78'] = LZ78
                 elif alg_use == 'BZIP':
                     algs['BZIP'] = BZIP
                 else:
@@ -153,11 +161,10 @@ def main():
 
             INFO(f'Compressed in {(end-end):.03f}sec')
 
-        _obytes = os.path.getsize(args.inputfile)
         _cbytes = os.path.getsize(output_file)
         OK(f'Original file: {args.inputfile} | {_obytes} bytes')
         OK(f'Compressed file: {output_file} | {_cbytes} bytes')
-        OK(f'Compressed file to about {round((((_obytes-_cbytes)/_obytes)*100), 0)}% of original')
+        OK(f'Compressed file to about {round(((_cbytes/_obytes)*100), 0)}% of original')
 
     ### DECOMPRESS
     elif args.decompress:
