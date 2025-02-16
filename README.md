@@ -25,3 +25,4 @@ optional arguments:
 # Thanks to
 - [Shannon Fano](https://github.com/NitroLine/Shannon-Fano-archiver)
 - [LZW](https://github.com/adityagupta3006/LZW-Compressor-in-Python)
+- [BZIP](https://github.com/sentenzo/bzip2)
