@@ -11,28 +11,56 @@ import argparse
 import time
 import os
 
+import threading
 
-def brutforce(inputfile: str, outputfile: str, algs: dict):
-    result = {}
-    for name_alg, lib_alg in algs.items():
-        INFO('Starting ' + name_alg)
+def compress_and_store(inputfile: str, result: dict, name_alg: str, lib_alg):
+    INFO('Starting ' + name_alg)
 
-        start = time.time()
+    start = time.time()
+    try:
         bytes_to_write = lib_alg.compress(inputfile)
-        end = time.time()
+    except Exception as e:
+        ERR(f"Error compressing with {name_alg}: {e}")
+        result[name_alg] = None
+        return
 
-        result[name_alg] = bytes_to_write
+    end = time.time()
 
-        INFO(f'Compressed with {name_alg} ALG in {(end-start):.03f}sec')
-        OK(f'Compressed {name_alg} file result: {len(bytes_to_write)} bytes')
+    result[name_alg] = bytes_to_write
 
-    best = min(result.keys(), key=lambda name_alg: len(result.get(name_alg)))
+    INFO(f'Compressed with {name_alg} ALG in {(end-start):.03f}sec')
+    OK(f'Compressed {name_alg} file result: {len(bytes_to_write)} bytes')
+
+
+def brutforce(inputfile: str, outputfile: str, algs: dict, multithread: bool = True):
+    result = {}
+    print(inputfile)
+
+    if multithread:
+        threads = []
+        for name_alg, lib_alg in algs.items():
+            thread = threading.Thread(target=compress_and_store, args=(inputfile, result, name_alg, lib_alg,))
+            threads.append(thread)
+            thread.start()
+
+        for thread in threads:
+            thread.join()
+
+    else:
+        for name_alg, lib_alg in algs.items():
+            compress_and_store(inputfile, result, name_alg, lib_alg)
+
+    valid_results = {k: v for k, v in result.items() if v is not None}
+
+    if not valid_results:
+        ERREXIT("All compression algorithms failed.")
+
+    best = min(valid_results.keys(), key=lambda name_alg: len(valid_results[name_alg]))
     print()
     OK(f'Best compression result with {best} alg\n')
-    #OK(f'{best} alg result: {len(result[best])} | {round((((size-len(result[best]))/len(result[best]))*100), 0)}%')
 
     with open(outputfile, 'wb') as file:
-        file.write(result[best])
+        file.write(valid_results[best])
 
 
 def main():
@@ -43,6 +71,7 @@ def main():
     parser.add_argument('-o', '--output', type=str, help='path to output file. If not used, using [inputfile].packed')
     parser.add_argument('-a', '--alg', type=str, help='Compression algorithm. Variants: {HF(Huffman);RLE(Run-Length Encoding);SHF(Shannon-Fan);LZW(Lempel-Ziv-Welch);LZ78(Lempel-Ziv 78)}')
     parser.add_argument('-b', '--brut', type=str, help='Bruforce. Can be used only in compression mode. Brut force alghorithms for best compression result. Ve-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-ery slow. Usage: ```python main.py -c file.txt -o out.bin --brut=[HF;RLE]```. [*] - all methods')
+    parser.add_argument('-noMT', '--nomultithreading', help="use only with --brut. if set brut force doesn't use multithreading", action='store_true')
 
     args = parser.parse_args()
 
@@ -55,6 +84,9 @@ def main():
     if bool(args.decompress) and bool(args.brut):
         ERREXIT('duh. you cant use brutforce in decompress mode')
 
+    if bool(args.nomultithreading) and not bool(args.brut):
+        ERREXIT('duh. you cant use -noMT parameter without compressing and brutforce mode')
+
     output_file = args.inputfile + ('.packed' if args.compress else '.unpacked')
     if args.output:
         output_file = args.output
@@ -66,6 +98,8 @@ def main():
     if args.compress:
         if args.brut:
             INFO("WARNING! Using brut force for best compression result.")
+            if args.nomultithreading:
+                INFO("WARNING! Using no parrallel brut force mode")
 
             algs = {}
             for alg_use in args.brut[1:-1].split(';'):
@@ -92,7 +126,7 @@ def main():
                     ERREXIT(f"duh. idk about '{alg_use}' alg")
 
             INFO('ALGS: ' + ' | '.join(list(algs.keys())))
-            brutforce(args.inputfile, output_file, algs)
+            brutforce(args.inputfile, output_file, algs, not args.nomultithreading)
         else:
             start = time.time()
             INFO("ALG: " + args.alg)
