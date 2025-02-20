@@ -6,6 +6,8 @@ import alg.lz78 as LZ78
 import alg.bzip as BZIP
 import alg.lzw as LZW
 import alg.rle as RLE
+import alg.bwt as BWT
+import alg.mtf as MTF
 
 import argparse
 
@@ -71,7 +73,7 @@ def main():
     parser.add_argument('-c', '--compress', help='Compress or Decompress inputfile', action='store_true')
     parser.add_argument('-d', '--decompress', help='Compress or Decompress inputfile', action='store_true')
     parser.add_argument('-o', '--output', type=str, help='path to output file. If not used, using [inputfile].packed')
-    parser.add_argument('-a', '--alg', type=str, help='Compression algorithm. Variants: {HF(Huffman);RLE(Run-Length Encoding);SHF(Shannon-Fan);LZW(Lempel-Ziv-Welch);LZ78(Lempel-Ziv 78)};BZIP(Basic Leucine Zipper Domain)')
+    parser.add_argument('-a', '--alg', type=str, help='Compression algorithm. Variants: {HF(Huffman);RLE(Run-Length Encoding);SHF(Shannon-Fan);LZW(Lempel-Ziv-Welch);LZ78(Lempel-Ziv 78)};BZIP(Basic Leucine Zipper Domain);BWT;MTF')
     parser.add_argument('-b', '--brut', type=str, help='Bruforce. Can be used only in compression mode. Brut force alghorithms for best compression result. Ve-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-e-ery slow. Usage: ```python main.py -c file.txt -o out.bin --brut=[HF;RLE]```. [*] - all methods')
     parser.add_argument('-noMT', '--nomultithreading', help="use only with --brut. if set brut force doesn't use multithreading", action='store_true')
 
@@ -117,6 +119,8 @@ def main():
                     else:
                         algs['LZ78'] = LZ78
                     algs['BZIP'] = BZIP
+                    algs['BWT'] = BWT
+                    algs['MTF'] = MTF
                     break
 
                 if alg_use == 'HF':
@@ -134,6 +138,10 @@ def main():
                         algs['LZ78'] = LZ78
                 elif alg_use == 'BZIP':
                     algs['BZIP'] = BZIP
+                elif alg_use == 'BWT':
+                    algs['BWT'] = BWT
+                elif alg_use == 'MTF':
+                    algs['MTF'] = MTF
                 else:
                     ERREXIT(f"duh. idk about '{alg_use}' alg")
 
@@ -154,6 +162,10 @@ def main():
                 LZ78.compress(args.inputfile, output_file)
             elif args.alg == 'BZIP':
                 BZIP.compress(args.inputfile, output_file)
+            elif alg_use == 'BWT':
+                BWT.compress(args.inputfile, output_file)
+            elif alg_use == 'MTF':
+                MTF.compress(args.inputfile, output_file)
             else:
                 ERREXIT(f"duh. idk about '{args.alg}' alg")
 
@@ -183,6 +195,10 @@ def main():
             LZ78.decompress(args.inputfile, output_file)
         elif args.alg == 'BZIP':
             BZIP.decompress(args.inputfile, output_file)
+        elif alg_use == 'BWT':
+            BWT.decompress(args.inputfile, output_file)
+        elif alg_use == 'MTF':
+            MTF.decompress(args.inputfile, output_file)
         else:
             ERREXIT("duh. idk about this alg")
 
